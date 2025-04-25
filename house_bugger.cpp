@@ -55,15 +55,13 @@ public:
 };
 
 // Lớp nhân viên đầu bếp
-// Lớp nhân viên đầu bếp
 class Chef_Staff
 {
 private:
     string name, id, phone_number;
-    InventoryRequest requests[100]; // Mảng lưu trữ các yêu cầu
-    int requestCount;               // Số lượng yêu cầu
-
+    int requestCount; // Số lượng yêu cầu
 public:
+    InventoryRequest requests[100]; // Mảng lưu trữ các yêu cầu
     Chef_Staff(string name = "", string id = "", string phone_number = "")
     {
         this->name = name;
@@ -72,6 +70,10 @@ public:
         this->requestCount = 0;
     }
     ~Chef_Staff() {}
+    InventoryRequest getRequest(int index)
+    {
+        return requests[index];
+    }
     void Setter()
     {
         // Giữ nguyên phần này
@@ -141,9 +143,82 @@ public:
         cout << string(40, '-') << endl;
     }
 };
+
 // Lớp quản lý thủ kho
 class Warehouse_Staff
 {
+private:
+    string name;
+    // Thay đổi chefs từ một chef duy nhất thành một mảng các chef
+    Chef_Staff *chefs; // Con trỏ tới mảng các chef
+    int totalChefs;    // Số lượng chef
+
+public:
+    Warehouse_Staff(string name = "Kho Truong Thanh")
+    {
+        this->name = name;
+        this->chefs = nullptr;
+        this->totalChefs = 0;
+    }
+
+    // Thêm phương thức để cập nhật danh sách chef
+    void setChefs(Chef_Staff *chefArray, int totalChefs)
+    {
+        this->chefs = chefArray;
+        this->totalChefs = totalChefs;
+    }
+
+    void getProductInStock() // hàm này sẽ lấy số lượng sản phẩm có trong kho
+    {
+        // Chức năng trong tương lai
+    }
+
+    void getRequestStaffChef() // hàm này sẽ lấy yêu cầu lấy hàng của nhân viên đầu bếp
+    {
+        if (chefs == nullptr || totalChefs == 0)
+        {
+            cout << "No chef data available!" << endl;
+            return;
+        }
+
+        bool hasRequests = false;
+
+        // Duyệt qua tất cả các chef
+        for (int i = 0; i < totalChefs; i++)
+        {
+            // Kiểm tra xem chef này có yêu cầu nào không
+            if (chefs[i].getRequestCount() > 0)
+            {
+                hasRequests = true;
+                cout << "\nRequests from Chef ID: " << chefs[i].getId() << endl;
+                cout << left;
+                cout << setw(20) << "Product name" << setw(20) << "Quantity" << endl;
+                cout << string(40, '-') << endl;
+
+                // Hiển thị tất cả các yêu cầu của chef này
+                for (int j = 0; j < chefs[i].getRequestCount(); j++)
+                {
+                    chefs[i].getRequest(j).Getter();
+                }
+                cout << string(40, '-') << endl;
+            }
+        }
+
+        if (!hasRequests)
+        {
+            cout << "No requests found from any chef." << endl;
+        }
+    }
+
+    void requestGetProductInInvoice() // hàm này sẽ yêu cầu lấy thêm hàng đến với nhà cung cấp
+    {
+        // Chức năng trong tương lai
+    }
+
+    string getName()
+    {
+        return this->name;
+    }
 };
 
 // lớp sản phẩm
@@ -333,18 +408,25 @@ public:
         cout << "Enter date shipping(dd/mm/yy): ";
         cin >> this->day >> this->month >> this->year;
     }
-    void Getter() {}
+    void Getter()
+    {
+    }
 };
+
+// lớp 
+
 // MENU PHỤ CHO CHEF STAFF
 void ChefStaffMenu(Chef_Staff chefs[], int &totalChefs, int &numberProductReq)
 {
     int choice;
+    // Cập nhật thông tin chef cho warehouse
+
     do
     {
         cout << "\n==================== MENU - CHEF STAFF ====================" << endl;
         cout << "1. Create new chefs" << endl;
         cout << "2. Show all chef info" << endl;
-        cout << "3. Send request to inventory " << endl;
+        cout << "3. Send request to warehouse " << endl;
         cout << "4. Show requests" << endl;
         cout << "5. Back to main menu" << endl;
         cout << "Choose option: ";
@@ -663,6 +745,54 @@ void SupplierMenu(Supplier suppliers[], int &totalSupplier, int &totalProduct)
     } while (choice != 5);
 }
 
+// MENU PHỤ CHO THỦ KHO
+void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int totalChefs, int &numberProductReq)
+{
+    int choice;
+    warehouses[0].setChefs(chefs, totalChefs);
+    do
+    {
+        cout << "\n==================== MENU - WAREHOUSE ====================" << endl;
+        cout << "Hi " << warehouses->getName() << endl;
+        cout << "-----------------------" << endl;
+        cout << "1. Show all requests form chefs" << endl;
+        cout << "2. Send product to chef staff " << endl;
+        cout << "3. Show products in stock" << endl;
+        cout << ""
+        cout << "4. Back to main menu" << endl;
+        cout << "Choose option: ";
+        cin >> choice;
+        cout << "\n";
+
+        switch (choice)
+        {
+        case 1:
+        {
+            warehouses->getRequestStaffChef();
+            break;
+        }
+
+        case 2:
+        {
+        }
+        break;
+
+        case 3:
+        {
+            break;
+        }
+
+        case 4:
+            cout << "Returning to main menu...\n";
+            break;
+
+        default:
+            cout << "Invalid choice. Please try again.\n";
+            break;
+        }
+    } while (choice != 4);
+}
+
 // MENU CHÍNH
 void MenuPickJob()
 {
@@ -675,6 +805,8 @@ void MenuPickJob()
     Supplier suppliers[100]; // Mảng chứa tối đa 100 nhà cung cấp
     int totalSupplier = 0;   // Biến đếm số lượng supplier đã tạo
     int totalProduct = 0;
+
+    Warehouse_Staff warehouses[1];
     do
     {
         cout << "\n========== MENU FOR JOB SELECTION ==========" << endl;
@@ -691,7 +823,7 @@ void MenuPickJob()
             ChefStaffMenu(chefs, totalChefs, numberProductReq);
             break;
         case 2:
-            cout << "Warehouse Staff selected (chưa có chức năng).\n";
+            WarehouseStaffMenu(warehouses, chefs, totalChefs, numberProductReq);
             break;
         case 3:
             SupplierMenu(suppliers, totalSupplier, totalProduct);
