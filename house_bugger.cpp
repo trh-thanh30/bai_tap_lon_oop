@@ -621,7 +621,9 @@ public:
         this->totalChefs = 0;
         this->totalProducts = 0;
         this->totalOrders = 0;
+        this->purchaseOrders = new PurchaseOrder[100];
     }
+    ~Warehouse_Staff() {}
 
     // Thêm phương thức để cập nhật danh sách chef
     void setChefs(Chef_Staff *chefArray, int totalChefs)
@@ -676,7 +678,8 @@ public:
         }
         cout << string(75, '-') << endl;
     }
-    void getRequestStaffChef() // Lấy yêu cầu từ nhân viên đầu bếp
+    // Lấy yêu cầu từ nhân viên đầu bếp
+    void getRequestStaffChef()
     {
         if (chefs == nullptr || totalChefs == 0)
         {
@@ -792,10 +795,31 @@ public:
         newExport.Getter();
     }
 
-    // Tạo đơn đặt hàng mới dựa trên số lượng tồn kho
-
-    // Hiển thị danh sách đơn đặt hàng
-
+    // tạo đơn hàng mua hàng
+    // void createdOrder(int lengthOrder, Supplier suppliers[], int totalSupliers)
+    // {
+    //     string supllierId;
+    //     bool found = false;
+    //     do
+    //     {
+    //         cout << "Enter supplier Id: ";
+    //         cin.ignore();
+    //         getline(cin, supllierId);
+    //         if (supllierId.empty())
+    //         {
+    //             cout << "Please enter a supplierid" << endl;
+    //         }
+    //     } while (supllierId.empty());
+    //     for (int i = 0; i < totalSupliers; i++) {
+    //         if(supplierId == suppliers.getIdSupplier()) {
+    //             found = true;
+    //             purchaseOrders->Setter();
+    //         }
+    //     }
+    //     if(!found) {
+    //         cout << "Supplier id invalid" << endl;
+    //     }
+    // }
     string getName()
     {
         return this->name;
@@ -1344,7 +1368,7 @@ void SupplierMenu(Supplier suppliers[], int &totalSupplier, int &totalProduct, P
 }
 
 // MENU PHỤ CHO THỦ KHO
-void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int totalChefs, int &numberProductReq)
+void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int totalChefs, int &numberProductReq, Supplier suppliers[], int &totalSupplier)
 {
     int choice;
     warehouses[0].setChefs(chefs, totalChefs);
@@ -1367,20 +1391,23 @@ void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int to
             warehouses->getRequestStaffChef();
             break;
         }
-        case 2:
-        {
-            // warehouses->createPurchaseOrder();
-        }
+            // case 2:
+            // {
+            //     int lengthOrder;
+            //     cout << "Enter length order: ";
+            //     cin >> lengthOrder;
+            //     warehouses->createdOrder(lengthOrder, suppliers, totalSupplier);
+            // }
 
             // case 2:
             // {
-            //     string chefId;
+            //
+            //   string chefId;
             //     cout << "Enter Chef ID to process request: ";
             //     cin >> chefId;
             //     warehouses->processChefRequest(chefId);
             //     break;
             // }
-
             // case 3:
             // {
             //     warehouses->getProductInStock();
@@ -1404,7 +1431,6 @@ void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int to
             //     warehouses->showPurchaseOrders();
             //     break;
             // }
-
         case 7:
             cout << "Returning to main menu...\n";
             break;
@@ -1449,7 +1475,7 @@ void MenuPickJob()
             ChefStaffMenu(chefs, totalChefs, numberProductReq);
             break;
         case 2:
-            WarehouseStaffMenu(warehouses, chefs, totalChefs, numberProductReq);
+            WarehouseStaffMenu(warehouses, chefs, totalChefs, numberProductReq, suppliers, totalSupplier);
             break;
         case 3:
             SupplierMenu(suppliers, totalSupplier, totalProduct, purchaseOrders, totalOrders);
