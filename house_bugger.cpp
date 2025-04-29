@@ -593,6 +593,152 @@ public:
     }
 };
 
+// Lớp nhà cung cấp
+class Supplier
+{
+protected:
+    string nameSupplier, phoneSupplier, addressSupplier, idSupplier;
+    Product products[100]; // Mảng chứa tối đa 100 sản phẩm
+
+public:
+    int totalProducts = 0;
+
+    Supplier(string nameSupplier = "", string phoneSupplier = "", string addressSupplier = "", string idSupplier = "")
+    {
+        this->idSupplier = idSupplier;
+        this->nameSupplier = nameSupplier;
+        this->phoneSupplier = phoneSupplier;
+        this->addressSupplier = addressSupplier;
+    }
+    ~Supplier() {}
+    void Setter()
+    {
+        cin.ignore();
+        do
+        {
+            cout << "Enter your ID: ";
+            getline(cin, this->idSupplier);
+            if (this->idSupplier.empty())
+            {
+                cout << "ID is required.\n";
+            }
+        } while (this->idSupplier.empty());
+        do
+        {
+            cout << "Enter your name: ";
+            getline(cin, this->nameSupplier);
+            if (this->nameSupplier.empty())
+            {
+                cout << "Name is required.\n";
+            }
+        } while (this->nameSupplier.empty());
+        do
+        {
+            cout << "Enter your phone number: ";
+            getline(cin, this->phoneSupplier);
+            if (!isValidPhoneNumber(this->phoneSupplier) || this->phoneSupplier.empty())
+            {
+                cout << "Invalid phone number\n";
+            }
+        } while (this->phoneSupplier.empty() || !isValidPhoneNumber(this->phoneSupplier));
+        cout << "Enter your address: ";
+        getline(cin, this->addressSupplier);
+    }
+    void Getter()
+    {
+        cout << left;
+        cout << setw(10) << this->idSupplier << setw(20) << this->nameSupplier << setw(20) << this->phoneSupplier << setw(20) << this->addressSupplier << endl;
+    }
+    void createProduct(int length)
+    {
+
+        for (int i = 0; i < length; i++)
+        {
+            cout << "Creating product #" << i + 1 << ":\n";
+            products[totalProducts].Setter();
+            totalProducts++;
+        }
+    }
+    void showProducts()
+    {
+        cout << left;
+        cout << setw(10) << "ID" << setw(20) << "Name product" << setw(20) << "Quantity" << setw(20) << "Price" << endl;
+        cout << string(70, '-') << endl;
+        for (int i = 0; i < totalProducts; i++)
+        {
+            products[i].Getter();
+        }
+        cout << string(70, '-') << endl;
+    }
+    void viewPurchaseOrders(PurchaseOrder orders[], int totalOrders)
+    {
+        bool foundOrders = false;
+        cout << "\n====== PURCHASE ORDERS FOR " << nameSupplier << " ======\n";
+
+        for (int i = 0; i < totalOrders; i++)
+        {
+            if (orders[i].getSupplierId() == idSupplier)
+            {
+                orders[i].Getter();
+                foundOrders = true;
+            }
+        }
+
+        if (!foundOrders)
+        {
+            cout << "No pending purchase orders for this supplier.\n";
+        }
+    }
+    Invoice processOrder(string orderId, PurchaseOrder orders[], int totalOrders)
+    {
+        Invoice newInvoice;
+        bool orderFound = false;
+
+        // Find the order
+        for (int i = 0; i < totalOrders; i++)
+        {
+            if (orders[i].getOrderId() == orderId && orders[i].getSupplierId() == idSupplier)
+            {
+                orderFound = true;
+
+                // Create invoice
+                string invoiceId;
+                int day, month, year;
+
+                cout << "Processing order: " << orderId << endl;
+                cout << "Enter delivery invoice ID: ";
+                cin >> invoiceId;
+                cout << "Enter delivery date (dd mm yyyy): ";
+                cin >> day >> month >> year;
+
+                // Initialize the invoice
+                newInvoice = Invoice(invoiceId, day, month, year);
+
+                // Add products from order to invoice
+                // This would require additional implementation
+
+                cout << "Order " << orderId << " processed successfully.\n";
+                break;
+            }
+        }
+
+        if (!orderFound)
+        {
+            cout << "Order not found or doesn't belong to this supplier.\n";
+        }
+
+        return newInvoice;
+    }
+    string getIdSupplier()
+    {
+        return this->idSupplier;
+    }
+    string getNameSupplier()
+    {
+        return this->nameSupplier;
+    }
+};
+
 // Lớp quản lý thủ kho
 class Warehouse_Staff
 {
@@ -826,147 +972,116 @@ public:
     }
 
     // Đối chiếu hàng xuất và nhập để lập đơn đặt hàng
-};
-
-// Lớp nhà cung cấp
-class Supplier
-{
-protected:
-    string nameSupplier, phoneSupplier, addressSupplier, idSupplier;
-    Product products[100]; // Mảng chứa tối đa 100 sản phẩm
-
-public:
-    int totalProducts = 0;
-
-    Supplier(string nameSupplier = "", string phoneSupplier = "", string addressSupplier = "", string idSupplier = "")
+    void createPurchaseOrder(Supplier suppliers[], int totalSuppliers)
     {
-        this->idSupplier = idSupplier;
-        this->nameSupplier = nameSupplier;
-        this->phoneSupplier = phoneSupplier;
-        this->addressSupplier = addressSupplier;
-    }
-    ~Supplier() {}
-    string getIdSupplier()
-    {
-        return this->idSupplier;
-    }
-    void Setter()
-    {
-        cin.ignore();
-        do
+        if (totalSuppliers == 0)
         {
-            cout << "Enter your ID: ";
-            getline(cin, this->idSupplier);
-            if (this->idSupplier.empty())
-            {
-                cout << "ID is required.\n";
-            }
-        } while (this->idSupplier.empty());
-        do
-        {
-            cout << "Enter your name: ";
-            getline(cin, this->nameSupplier);
-            if (this->nameSupplier.empty())
-            {
-                cout << "Name is required.\n";
-            }
-        } while (this->nameSupplier.empty());
-        do
-        {
-            cout << "Enter your phone number: ";
-            getline(cin, this->phoneSupplier);
-            if (!isValidPhoneNumber(this->phoneSupplier) || this->phoneSupplier.empty())
-            {
-                cout << "Invalid phone number\n";
-            }
-        } while (this->phoneSupplier.empty() || !isValidPhoneNumber(this->phoneSupplier));
-        cout << "Enter your address: ";
-        getline(cin, this->addressSupplier);
-    }
-    void Getter()
-    {
-        cout << left;
-        cout << setw(10) << this->idSupplier << setw(20) << this->nameSupplier << setw(20) << this->phoneSupplier << setw(20) << this->addressSupplier << endl;
-    }
-    void createProduct(int length)
-    {
-
-        for (int i = 0; i < length; i++)
-        {
-            cout << "Creating product #" << i + 1 << ":\n";
-            products[totalProducts].Setter();
-            totalProducts++;
+            cout << "Not have supplier in system. Please try agin!!.\n";
+            return;
         }
-    }
-    void showProducts()
-    {
+
+        // Hiển thị danh sách các nhà cung cấp để người dùng chọn
+        cout << "\n====== LIST OF SUPPLIER ======\n";
         cout << left;
-        cout << setw(10) << "ID" << setw(20) << "Name product" << setw(20) << "Quantity" << setw(20) << "Price" << endl;
-        cout << string(70, '-') << endl;
-        for (int i = 0; i < totalProducts; i++)
+        cout << setw(10) << "ID" << setw(20) << "Tên nhà cung cấp" << endl;
+        cout << string(30, '-') << endl;
+
+        for (int i = 0; i < totalSuppliers; i++)
         {
-            products[i].Getter();
+            cout << setw(10) << suppliers[i].getIdSupplier() << setw(20) << suppliers[i].getNameSupplier() << endl;
         }
-        cout << string(70, '-') << endl;
+        cout << string(30, '-') << endl;
+
+        // Nhập thông tin đơn hàng
+        string supplierId;
+        bool supplierFound = false;
+
+        do
+        {
+            cout << "Enter id supplier: ";
+            cin.ignore();
+            getline(cin, supplierId);
+
+            if (supplierId.empty())
+            {
+                cout << "Id supplier is requried!\n";
+                continue;
+            }
+
+            // Kiểm tra xem nhà cung cấp có tồn tại không
+            for (int i = 0; i < totalSuppliers; i++)
+            {
+                if (suppliers[i].getIdSupplier() == supplierId)
+                {
+                    supplierFound = true;
+                    break;
+                }
+            }
+
+            if (!supplierFound)
+            {
+                cout << "Not found id supplier. Please try aign!!!\n";
+            }
+
+        } while (!supplierFound);
+
+        // Tạo đơn đặt hàng mới
+        PurchaseOrder newOrder;
+        newOrder.Setter(); // Gọi phương thức nhập thông tin cơ bản của đơn hàng
+
+        // Thêm sản phẩm vào đơn hàng
+        int numItems;
+        cout << "Enter number of order product: ";
+        cin >> numItems;
+
+        for (int i = 0; i < numItems; i++)
+        {
+            string productId, productName;
+            int quantity;
+
+            cin.ignore();
+            cout << "\nOrder #" << (i + 1) << ":\n";
+            cout << "Enter id order: ";
+            getline(cin, productId);
+
+            cout << "Nhập tên sản phẩm: ";
+            getline(cin, productName);
+
+            cout << "Nhập số lượng cần đặt: ";
+            cin >> quantity;
+
+            // Thêm sản phẩm vào đơn hàng
+            newOrder.addOrderItem(productId, productName, quantity);
+        }
+
+        // Thêm đơn hàng vào danh sách
+        purchaseOrders[totalOrders] = newOrder;
+        totalOrders++;
+
+        cout << "\nĐã tạo đơn đặt hàng thành công!\n";
+        newOrder.Getter(); // Hiển thị thông tin đơn hàng vừa tạo
     }
-    void viewPurchaseOrders(PurchaseOrder orders[], int totalOrders)
+
+    // Phương thức hiển thị tất cả đơn đặt hàng
+    void showAllPurchaseOrders()
     {
-        bool foundOrders = false;
-        cout << "\n====== PURCHASE ORDERS FOR " << nameSupplier << " ======\n";
+        if (totalOrders == 0)
+        {
+            cout << "Not have purchase orders yet!!!\n";
+            return;
+        }
+
+        cout << "\n====== LIST OF PURCHASE ORDERS ======\n";
+        cout << left;
+        cout << setw(15) << "Id order" << setw(15) << "Suppliers" << endl;
+        cout << string(30, '-') << endl;
 
         for (int i = 0; i < totalOrders; i++)
         {
-            if (orders[i].getSupplierId() == idSupplier)
-            {
-                orders[i].Getter();
-                foundOrders = true;
-            }
+            cout << setw(15) << purchaseOrders[i].getOrderId()
+                 << setw(15) << purchaseOrders[i].getSupplierId() << endl;
         }
-
-        if (!foundOrders)
-        {
-            cout << "No pending purchase orders for this supplier.\n";
-        }
-    }
-    Invoice processOrder(string orderId, PurchaseOrder orders[], int totalOrders)
-    {
-        Invoice newInvoice;
-        bool orderFound = false;
-
-        // Find the order
-        for (int i = 0; i < totalOrders; i++)
-        {
-            if (orders[i].getOrderId() == orderId && orders[i].getSupplierId() == idSupplier)
-            {
-                orderFound = true;
-
-                // Create invoice
-                string invoiceId;
-                int day, month, year;
-
-                cout << "Processing order: " << orderId << endl;
-                cout << "Enter delivery invoice ID: ";
-                cin >> invoiceId;
-                cout << "Enter delivery date (dd mm yyyy): ";
-                cin >> day >> month >> year;
-
-                // Initialize the invoice
-                newInvoice = Invoice(invoiceId, day, month, year);
-
-                // Add products from order to invoice
-                // This would require additional implementation
-
-                cout << "Order " << orderId << " processed successfully.\n";
-                break;
-            }
-        }
-
-        if (!orderFound)
-        {
-            cout << "Order not found or doesn't belong to this supplier.\n";
-        }
-
-        return newInvoice;
+        cout << string(30, '-') << endl;
     }
 };
 
@@ -1368,7 +1483,7 @@ void SupplierMenu(Supplier suppliers[], int &totalSupplier, int &totalProduct, P
 }
 
 // MENU PHỤ CHO THỦ KHO
-void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int totalChefs, int &numberProductReq, Supplier suppliers[], int &totalSupplier)
+void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int totalChefs, int &numberProductReq, Supplier suppliers[], int &totalSupplier, int &totalOrders)
 {
     int choice;
     warehouses[0].setChefs(chefs, totalChefs);
@@ -1378,8 +1493,12 @@ void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int to
         cout << "Hi " << warehouses->getName() << endl;
         cout << "-----------------------" << endl;
         cout << "1. Show all requests from chefs" << endl;
-        cout << "2. Order product to supplier" << endl;
-        cout << "7. Back to meny" << endl;
+        cout << "2. Process chef requests" << endl;
+        cout << "3. Create purchase order to supplier" << endl;
+        cout << "4. Show all purchase orders" << endl;
+        cout << "5. Show inventory" << endl;
+        cout << "6. Show export records" << endl;
+        cout << "7. Back to main menu" << endl;
         cout << "Choose option: ";
         cin >> choice;
         cout << "\n";
@@ -1391,46 +1510,36 @@ void WarehouseStaffMenu(Warehouse_Staff warehouses[], Chef_Staff chefs[], int to
             warehouses->getRequestStaffChef();
             break;
         }
-            // case 2:
-            // {
-            //     int lengthOrder;
-            //     cout << "Enter length order: ";
-            //     cin >> lengthOrder;
-            //     warehouses->createdOrder(lengthOrder, suppliers, totalSupplier);
-            // }
-
-            // case 2:
-            // {
-            //
-            //   string chefId;
-            //     cout << "Enter Chef ID to process request: ";
-            //     cin >> chefId;
-            //     warehouses->processChefRequest(chefId);
-            //     break;
-            // }
-            // case 3:
-            // {
-            //     warehouses->getProductInStock();
-            //     break;
-            // }
-
-            // case 4:
-            // {
-            //     warehouses->showExportRecords();
-            //     break;
-            // }
-
-            // case 5:
-            // {
-            //     warehouses->reconcileInventory();
-            //     break;
-            // }
-
-            // case 6:
-            // {
-            //     warehouses->showPurchaseOrders();
-            //     break;
-            // }
+        case 2:
+        {
+            string chefId;
+            cout << "Enter Chef ID to process request: ";
+            cin >> chefId;
+            warehouses->processChefRequest(chefId);
+            break;
+        }
+        case 3:
+        {
+            warehouses->createPurchaseOrder(suppliers, totalSupplier);
+            totalOrders++;
+            break;
+        }
+        case 4:
+        {
+            warehouses->showAllPurchaseOrders();
+            break;
+        }
+        case 5:
+        {
+            warehouses->showInventory();
+            break;
+        }
+        case 6:
+        {
+            // Hiển thị hồ sơ xuất kho - cần thực hiện
+            cout << "This feature is under development.\n";
+            break;
+        }
         case 7:
             cout << "Returning to main menu...\n";
             break;
@@ -1475,7 +1584,7 @@ void MenuPickJob()
             ChefStaffMenu(chefs, totalChefs, numberProductReq);
             break;
         case 2:
-            WarehouseStaffMenu(warehouses, chefs, totalChefs, numberProductReq, suppliers, totalSupplier);
+            WarehouseStaffMenu(warehouses, chefs, totalChefs, numberProductReq, suppliers, totalSupplier, totalOrders);
             break;
         case 3:
             SupplierMenu(suppliers, totalSupplier, totalProduct, purchaseOrders, totalOrders);
